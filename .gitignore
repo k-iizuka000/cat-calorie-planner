@@ -1,0 +1,5 @@
+venv/
+docker/venv/
+*.xlsx
+search.sh
+cat-calorie-planner/*
