@@ -2,4 +2,5 @@ venv/
 docker/venv/
 *.xlsx
 search.sh
-cat-calorie-planner/*
+expo-app/node_modules*
+node_modules*

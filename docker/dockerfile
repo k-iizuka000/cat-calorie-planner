@@ -1,8 +1,6 @@
 FROM node:18-bullseye
 
-# 必要パッケージのインストール（git, watchman等必要に応じて）
-# watchmanはホットリロードに便利ですが、なくても最低限は動きます
-# ただしLinux上でReact Nativeの開発時にはwatchmanが推奨されます。
+# 必要パッケージのインストール（最低限）
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     git \
@@ -12,20 +10,11 @@ RUN apt-get update && \
     g++ \
     && rm -rf /var/lib/apt/lists/*
 
-# expo-cliは非推奨になりつつありますが、既存プロジェクト用にインストールしておく場合
-# 新規プロジェクト作成時は npx create-expo-app を推奨
-RUN npm install --global expo-cli
-
+# 作業ディレクトリ設定
 WORKDIR /app
 
-# ポート3000はwebプレビュー用
-# Expoデフォルトの開発サーバーは19000, 19001, 19002などを使用
-EXPOSE 19000 19001 19002 3000
+# Expo開発サーバー関連ポート開放
+EXPOSE 19000 19001 19002
 
-# コンテナ内で npx create-expo-app でプロジェクトを作成可能
-# 例:
-#   docker run -it --rm -v $(pwd):/app <image> npx create-expo-app MyCatApp
-# その後:
-#   docker run -it --rm -v $(pwd):/app -p 19000:19000 -p 19001:19001 -p 19002:19002 <image> expo start
-
-CMD [ "bash" ]
+# デフォルトはbash起動。コンテナ起動後、手動で npx expo start などを実行可能
+CMD ["bash"]
