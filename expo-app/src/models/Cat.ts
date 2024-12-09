@@ -1,27 +1,30 @@
 // src/models/Cat.ts
-export type CatStateCategory = 'normal' | 'spayed_neutered' | 'active' | 'weight_loss';
+export type CatStateCategory = 'baby' | 'not_spayed_neutered' | 'spayed_neutered' | 'active'| 'not_active' | 'weight_loss' | 'weight_up' | 'old_age';
 
 export interface Cat {
   id: string;
   name: string;
-  weight: number; // kg
+  weight: number; // in kg
   state: CatStateCategory;
+  // この辺りに目標カロリーを保存しておいてもいい
+  dailyCalorie: number;
 }
 
-// 状態毎の係数（仮例）
 export const CAT_STATE_FACTOR: Record<CatStateCategory, number> = {
-  normal: 1.0,
+  baby: 2.5,
+  not_spayed_neutered: 1.5,
   spayed_neutered: 1.2,
   active: 1.6,
+  not_active: 1.0,
   weight_loss: 0.8,
+  weight_up: 1.3,
+  old_age: 1.1
 };
 
-// RER計算例
 export function calcRER(weight: number): number {
   return weight * 30 + 70;
 }
 
-// 1日の目標カロリー計算例
 export function calcDailyCalorie(weight: number, state: CatStateCategory): number {
   const rer = calcRER(weight);
   const factor = CAT_STATE_FACTOR[state] || 1.0;

@@ -5,12 +5,12 @@ export default function IndexScreen() {
   const router = useRouter();
   
   const goToCats = () => {
-    router.push('/cats');
+    router.push('../cats');
   };
 
   return (
     <View style={styles.container}>
-      <Text>あああこんにちは、これはExpo Routerでの最初の画面です！</Text>
+      <Text>ahhhaこんにちは、これはExpo Routerでの最初の画面です！</Text>
       <Button title="猫一覧へ移動" onPress={goToCats} />
     </View>
   );
