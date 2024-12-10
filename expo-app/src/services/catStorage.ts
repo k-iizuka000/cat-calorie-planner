@@ -21,3 +21,9 @@ export async function addCat(newCat: Cat): Promise<void> {
   cats.push(newCat);
   await saveCats(cats);
 }
+
+export async function deleteCat(id: string): Promise<void> {
+  const cats = await loadCats();
+  const updated = cats.filter(c => c.id !== id);
+  await saveCats(updated);
+}

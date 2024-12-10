@@ -1,10 +1,10 @@
 // app/cats/[id].tsx
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet} from 'react-native';
+import { Alert, View, Text, TextInput, Button, StyleSheet, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { CatStateCategory, calcDailyCalorie, Cat } from '../../src/models/Cat';
-import { loadCats, saveCats } from '../../src/services/storage';
+import { loadCats, saveCats, deleteCat } from '../../src/services/catStorage';
 
 export default function EditCatScreen() {
   const { id } = useLocalSearchParams(); 
@@ -56,6 +56,12 @@ export default function EditCatScreen() {
     router.replace('/cats');
   };
 
+  const handleDelete = async () => {
+    if (!cat || typeof id !== 'string') return;
+    await deleteCat(id);
+    router.replace('/cats');
+  };
+
   if (!cat) {
     return (
       <View style={styles.container}>
@@ -69,25 +75,32 @@ export default function EditCatScreen() {
       <Text style={styles.title}>猫情報編集</Text>
 
       <Text>名前:</Text>
-      <TextInput
-        style={styles.input}
-        value={name}
-        onChangeText={setName}
-      />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <TextInput
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+        />
+      </TouchableWithoutFeedback>
 
       <Text>体重(kg):</Text>
-      <TextInput
-        style={styles.input}
-        value={weight}
-        onChangeText={setWeight}
-        keyboardType="numeric"
-      />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <TextInput
+          style={styles.input}
+          value={weight}
+          onChangeText={setWeight}
+          keyboardType="numeric"
+          returnKeyType="done"
+          onSubmitEditing={() => Keyboard.dismiss()}
+        />
+      </TouchableWithoutFeedback>
 
       <Text>状態カテゴリ:</Text>
       <Picker
         selectedValue={state}
         style={styles.input}
         onValueChange={(itemValue) => setState(itemValue as CatStateCategory)}
+        itemStyle={{ color: 'black' }}
       >
         <Picker.Item label="成長期の猫（生後1歳まで）" value="baby" />
         <Picker.Item label="未避妊・未去勢猫" value="not_spayed_neutered" />
@@ -104,7 +117,35 @@ export default function EditCatScreen() {
         <Text>目標カロリー: {adjustedCalorie} kcal/日</Text>
       )}
 
-      <Button title="保存" onPress={handleSave} />
+      <Button 
+        title="更新" 
+        onPress={() => {
+          Alert.alert(
+            "更新",
+            "更新しますか？",
+            [
+              { text: "いいえ", style: "cancel" },
+              { text: "はい", onPress: handleSave }
+            ],
+            { cancelable: true }
+          );
+        }} 
+      />
+      <Button 
+        title="削除" 
+        color="red" 
+        onPress={() => {
+          Alert.alert(
+            "削除確認",
+            "本当に削除しますか？",
+            [
+              { text: "いいえ", style: "cancel" },
+              { text: "はい", onPress: handleDelete }
+            ],
+            { cancelable: true }
+          );
+        }} 
+      />
       <Button title="戻る" onPress={() => router.back()} />
     </View>
   );

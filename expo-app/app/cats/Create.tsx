@@ -1,11 +1,13 @@
 // app/cats/create.tsx
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet} from 'react-native';
+import { Alert, View, Text, TextInput, Button, StyleSheet, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import { CatStateCategory, calcDailyCalorie } from '../../src/models/Cat';
-import { addCat } from '../../src/services/storage';
-import { v4 as uuidv4 } from 'uuid'; // uuidを利用する場合は `npm install uuid`してください
+import { addCat } from '../../src/services/catStorage';
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid'; 
+
 
 export default function CreateCatScreen() {
   const router = useRouter();
@@ -21,16 +23,22 @@ export default function CreateCatScreen() {
   };
 
   const handleSave = async () => {
-    const w = parseFloat(weight);
-    const cal = adjustedCalorie || calcDailyCalorie(w, state); 
-    const newCat = {
-      id: uuidv4(),
-      name,
-      weight: w,
-      state,
-      dailyCalorie: cal
-    };
-    await addCat(newCat);
+    console.log("handleSave called");
+    try {
+
+        const w = parseFloat(weight);
+        const cal = adjustedCalorie || calcDailyCalorie(w, state); 
+        const newCat = {
+        id: uuidv4(),
+        name,
+        weight: w,
+        state,
+        dailyCalorie: cal
+        };
+        await addCat(newCat);
+    } catch (e) {
+        console.error("Error saving cat:", e);
+    }
     router.replace('/cats');
   };
 
@@ -38,28 +46,32 @@ export default function CreateCatScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>新規猫登録</Text>
       <Text>名前:</Text>
-      <TextInput
-        style={styles.input}
-        value={name}
-        onChangeText={setName}
-      />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <TextInput
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+        />
+      </TouchableWithoutFeedback>
 
       <Text>体重(kg):</Text>
-      <TextInput
-        style={styles.input}
-        value={weight}
-        onChangeText={setWeight}
-        keyboardType="numeric"
-      />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <TextInput
+          style={styles.input}
+          value={weight}
+          onChangeText={setWeight}
+          keyboardType="numeric"
+          returnKeyType="done"
+          onSubmitEditing={() => Keyboard.dismiss()}
+        />
+      </TouchableWithoutFeedback>
 
       <Text>状態カテゴリ:</Text>
-      {/* @react-native-picker/picker を利用する場合: npm install @react-native-picker/picker */}
       <Picker
         selectedValue={state}
         style={styles.input}
         onValueChange={(itemValue) => setState(itemValue as CatStateCategory)}
         itemStyle={{ color: 'black' }}
-
       >
         <Picker.Item label="成長期の猫（生後1歳まで）" value="baby" />
         <Picker.Item label="未避妊・未去勢猫" value="not_spayed_neutered" />
@@ -76,7 +88,20 @@ export default function CreateCatScreen() {
         <Text>目標カロリー: {adjustedCalorie} kcal/日</Text>
       )}
 
-      <Button title="保存" onPress={handleSave} />
+      <Button 
+        title="登録" 
+        onPress={() => {
+          Alert.alert(
+            "登録",
+            "登録しますか？",
+            [
+              { text: "いいえ", style: "cancel" },
+              { text: "はい", onPress: handleSave }
+            ],
+            { cancelable: true }
+          );
+        }} 
+      />
       <Button title="戻る" onPress={() => router.back()} />
     </View>
   );

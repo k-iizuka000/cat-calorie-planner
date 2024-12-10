@@ -1,27 +1,28 @@
 // app/cats/index.tsx
-import React, { useEffect, useState } from 'react';
-import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
-import { loadCats } from '../../src/services/storage';
+
+import React, { useState, useCallback } from 'react';
+import { View, Text, Button, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { useRouter, useFocusEffect } from 'expo-router';
+import { loadCats } from '../../src/services/catStorage';
 import { Cat } from '../../src/models/Cat';
-import { useFocusEffect } from 'expo-router';
-import { useCallback } from 'react';
 
 export default function CatListScreen() {
   const [cats, setCats] = useState<Cat[]>([]);
   const router = useRouter();
 
-  const fetchData = async () => {
-    const data = await loadCats();
-    setCats(data);
-  };
-
-
+  // 画面がフォーカスされるたびにCatsを再読み込み
   useFocusEffect(
     useCallback(() => {
-      fetchData();
+      (async () => {
+        const data = await loadCats();
+        setCats(data);
+      })();
     }, [])
   );
+
+  const handlePressCat = (catId: string) => {
+    router.push({ pathname: '/cats/[id]', params: { id: catId } });
+  };
 
   return (
     <View style={styles.container}>
@@ -31,14 +32,17 @@ export default function CatListScreen() {
         data={cats}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={styles.catItem}>
+          <TouchableOpacity style={styles.catItem} onPress={() => handlePressCat(item.id)}>
             <Text style={styles.catName}>{item.name}</Text>
             <Text>体重: {item.weight} kg</Text>
             <Text>状態: {item.state}</Text>
             <Text>目標カロリー: {item.dailyCalorie} kcal/日</Text>
-          </View>
+            <Text style={styles.editHint}>タップで編集</Text>
+          </TouchableOpacity>
         )}
       />
+      
+      <Text >aaaa</Text>
     </View>
   );
 }
@@ -47,5 +51,6 @@ const styles = StyleSheet.create({
   container: { flex:1, padding:20, backgroundColor:'#fff' },
   title: { fontSize:24, fontWeight:'bold', marginBottom:20 },
   catItem: { padding:10, borderBottomWidth:1, borderColor:'#ddd' },
-  catName: { fontSize:18, fontWeight:'bold' }
+  catName: { fontSize:18, fontWeight:'bold' },
+  editHint: { fontSize:12, color:'blue', marginTop:5 }
 });
