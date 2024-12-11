@@ -1,6 +1,6 @@
 // app/foods/index.tsx
 import React, { useState, useCallback } from 'react';
-import { View, Text, Button, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Button, FlatList, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { loadFoods } from '../../src/services/foodStorage';
 import { Food } from '../../src/models/Food';
@@ -24,11 +24,12 @@ export default function FoodListScreen() {
 
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>フード一覧</Text>
       <Button title="新規登録" onPress={() => router.push('/foods/create')} />
       <FlatList
         data={foods}
+        scrollEnabled={false}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.item} onPress={() => handlePressFood(item.id)}>
@@ -42,7 +43,7 @@ export default function FoodListScreen() {
           </TouchableOpacity>
         )}
       />
-    </View>
+    </ScrollView>
   );
 }
 

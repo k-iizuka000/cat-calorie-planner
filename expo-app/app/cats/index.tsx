@@ -1,7 +1,7 @@
 // app/cats/index.tsx
 
 import React, { useState, useCallback } from 'react';
-import { View, Text, Button, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Button, FlatList, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { loadCats } from '../../src/services/catStorage';
 import { Cat } from '../../src/models/Cat';
@@ -25,11 +25,12 @@ export default function CatListScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView  style={styles.container}>
       <Text style={styles.title}>猫一覧</Text>
       <Button title="新規登録" onPress={() => router.push('/cats/create')} />
       <FlatList
         data={cats}
+        scrollEnabled={false}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.catItem} onPress={() => handlePressCat(item.id)}>
@@ -42,8 +43,7 @@ export default function CatListScreen() {
         )}
       />
       
-      <Text >aaaa</Text>
-    </View>
+    </ScrollView >
   );
 }
 

@@ -14,7 +14,8 @@ export default function IndexScreen() {
 
   return (
     <View style={styles.container}>
-      <Text>ahhhaこんにちは、これはExpo Routerでの最初の画面です！</Text>
+      <Text >ひひひ更新テスト</Text>
+      <Text>こんにちは、これはExpo Routerでの最初の画面です！</Text>
       <Button title="猫一覧へ移動" onPress={goToCats} />
       <Button title="フード一覧へ移動" onPress={goToFoods} />
     </View>

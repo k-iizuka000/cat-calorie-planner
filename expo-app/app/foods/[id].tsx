@@ -1,6 +1,6 @@
 // app/foods/[id].tsx
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, Keyboard, TouchableWithoutFeedback, ScrollView  } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Food } from '../../src/models/Food';
 import { loadFoods, updateFood, deleteFood } from '../../src/services/foodStorage';
@@ -9,15 +9,16 @@ import { Picker } from '@react-native-picker/picker';
 export default function EditFoodScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-
+  
+  // 初期は空やデフォルト値を入れておいて、後でロードした値で上書きする
   const [food, setFood] = useState<Food | null>(null);
   const [name, setName] = useState('');
-  const [caloriePerUnit, setCaloriePerUnit] = useState('100');
+  const [caloriePerUnit, setCaloriePerUnit] = useState('');
   const [unit, setUnit] = useState<'g' | 'bag'>('g');
-  const [salt, setSalt] = useState('0.1');
-  const [fat, setFat] = useState('1.0');
-  const [price, setPrice] = useState('100');
-  const [contentAmount, setContentAmount] = useState('100');
+  const [salt, setSalt] = useState('');
+  const [fat, setFat] = useState('');
+  const [price, setPrice] = useState('');
+  const [contentAmount, setContentAmount] = useState('');
 
   useEffect(() => {
     if (typeof id === 'string') {
@@ -83,7 +84,7 @@ export default function EditFoodScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView  style={styles.container}>
       <Text style={styles.title}>フード情報編集</Text>
 
       <Text>フード名:</Text>
@@ -140,7 +141,7 @@ export default function EditFoodScreen() {
         }} 
       />
       <Button title="戻る" onPress={() => router.back()} />
-    </View>
+    </ScrollView >
   );
 }
 
