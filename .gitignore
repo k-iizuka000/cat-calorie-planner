@@ -4,3 +4,5 @@ docker/venv/
 search.sh
 expo-app/node_modules*
 node_modules*
+*.md
+!README.md
